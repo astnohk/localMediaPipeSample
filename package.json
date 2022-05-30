@@ -1,0 +1,18 @@
+{
+  "devDependencies": {
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2"
+  },
+  "scripts": {
+    "start": "live-server dist",
+    "build": "webpack",
+    "watch": "webpack -w"
+  },
+  "dependencies": {
+    "@mediapipe/pose": "^0.5.1635988162",
+    "@tensorflow-models/pose-detection": "^2.0.0",
+    "@tensorflow/tfjs-backend-webgl": "^3.18.0",
+    "@tensorflow/tfjs-converter": "^3.18.0",
+    "@tensorflow/tfjs-core": "^3.18.0"
+  }
+}
