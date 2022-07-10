@@ -4,7 +4,7 @@
     "webpack-cli": "^4.10.0"
   },
   "scripts": {
-    "start": "live-server dist",
+    "start": "live-server --https=./node_modules/live-server-https .",
     "build": "webpack",
     "watch": "webpack -w"
   },
@@ -13,6 +13,7 @@
     "@tensorflow-models/pose-detection": "^2.0.0",
     "@tensorflow/tfjs-backend-webgl": "^3.18.0",
     "@tensorflow/tfjs-converter": "^3.18.0",
-    "@tensorflow/tfjs-core": "^3.18.0"
+    "@tensorflow/tfjs-core": "^3.18.0",
+    "live-server-https": "^0.0.2"
   }
 }
