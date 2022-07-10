@@ -14,6 +14,12 @@ Build with `npm run build`.
 Start HTTPS server (navigator.mediaDevices only available in secure context) and serve the files in `dist/`.
 Allow to access to local WebCamera devices to input the camera stream as sample images.
 
+Start demo with `live-server` by using following command:
+```
+$ npm start
+```
+Your default browser will open the files of the project directory. You can start the demo by opening `dist/`.
+
 
 ## TODO
 
