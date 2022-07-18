@@ -203,7 +203,7 @@ async function main()
 	//const image = document.getElementById('inputImage');
 	// Get media
 	const media = await navigator.mediaDevices.getUserMedia({ video: true });
-	console.log(media);
+	//console.log(media); // DEBUG
 	const video = document.getElementById('inputVideo');
 	video.srcObject = media;
 
@@ -218,7 +218,7 @@ async function main()
 	let count = 0;
 	const render = async () => {
 		const poses = await estimate(detector, video);
-		console.log(poses);
+		//console.log(poses); // DEBUG
 		count += 1;
 
 		const ctx = output.getContext('2d');

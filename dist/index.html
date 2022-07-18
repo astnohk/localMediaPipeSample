@@ -7,25 +7,73 @@ body {
 	background-color: rgb(5,5,5);
 }
 
-#inputVideo {
-	width: 640px;
+#output {
+	position: relative;
+	width: 600px;
+	height: 600px;
 }
 
 #outputCanvas {
-	width: 512px;
-	height: 512px;
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	width: 580px;
+	height: 580px;
+}
+
+#mainView_wrapper {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	outline-style: solid;
+	outline-width: 3px;
+	outline-color: rgb(255,255,255);
+	filter: blur(7px);
+}
+#mainView_wrapper_2nd {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	outline-style: solid;
+	outline-width: 2px;
+	outline-color: rgb(255,255,255);
+	filter: blur(3px);
+}
+#mainView_wrapper_3rd {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	outline-style: solid;
+	outline-width: 1px;
+	outline-color: rgb(255,255,255);
+	filter: blur(0.5px);
+}
+
+#inputVideo {
+	position: absolute;
+	width: 128px;
+	bottom: 0px;
 }
 </style>
-	<script type="text/javascript" src="../node_modules/@mediapipe/pose/pose.js"></script>
-	<script type="text/javascript" src="main.js"></script>
-	</head>
-	<body>
-		<div>
-			<video id="inputVideo" src="" autoplay>Your browser can't show video.</video>
-			<!--<img id="inputImage" src="test.jpg" style="display: none;">-->
-		</div>
-		<div>
-			<canvas id="outputCanvas"></canvas>
-		</div>
-	</body>
+<script type="text/javascript" src="../node_modules/@mediapipe/pose/pose.js"></script>
+<script type="text/javascript" src="main.js"></script>
+</head>
+<body>
+<div id="output">
+	<div id="mainView_wrapper"></div>
+	<div id="mainView_wrapper_2nd"></div>
+	<div id="mainView_wrapper_3rd"></div>
+	<canvas id="outputCanvas"></canvas>
+</div>
+<div>
+	<video id="inputVideo" src="" autoplay>Your browser can't show video.</video>
+	<!--<img id="inputImage" src="test.jpg" style="display: none;">-->
+</div>
+</body>
 </html>
