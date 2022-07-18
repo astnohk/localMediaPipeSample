@@ -8,7 +8,7 @@ let rotMat = [
 
 function createDetector()
 {
-	const model = new Pose({ locateFile: (file) => {
+	const model = new mpPose.Pose({ locateFile: (file) => {
 			return 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/' + file;
 		}
 	});
@@ -84,7 +84,7 @@ function drawPose(ctx, poses)
 
 	// Draw
 	if (!! poses.poseLandmarks) {
-		const pose = poses.poseLandmarks
+		const pose = poses.poseLandmarks;
 		for (let i = 0; i < 33; ++i) {
 			ctx.fillStyle = 'rgb(' +
 				color[i][0] + ',' +

@@ -1,7 +1,7 @@
-import * as poseDetection from '@tensorflow-models/pose-detection';
-import '@tensorflow/tfjs-core';
-import '@tensorflow/tfjs-backend-webgl';
-import '@mediapipe/pose';
+//import * as poseDetection from '@tensorflow-models/pose-detection';
+//import '@tensorflow/tfjs-core';
+//import '@tensorflow/tfjs-backend-webgl';
+//import '@mediapipe/pose';
 
 
 let rotMat = [
@@ -13,26 +13,35 @@ let rotMat = [
 
 async function createDetector()
 {
-	const model = poseDetection.SupportedModels.BlazePose;
-	const detectorConfig = {
-		runtime: 'mediapipe',
-		solutionPath: '../node_modules/@mediapipe/pose'
-	};
+	const model = new Pose({
+		locateFile: (file) => {
+			return `../node_modules/@mediapipe/pose/${file}`;
+		}
+	});
+	model.setOptions({
+		modelComplexity: 1,
+		smoothLandmarks: true,
+		enableSegmentation: true,
+		smoothSegmentation: true,
+		minDetectionConfidence: 0.5,
+		minTrackingConfidence: 0.5,
+	});
 
-	return await poseDetection.createDetector(model, detectorConfig);
+	return model;
 }
 
-async function estimate(detector, image)
+async function estimate(model, image)
 {
-	const estimationConfig = { enableSmoothing: true };
-	const timestamp = performance.now();
-	const poses = await detector.estimatePoses(image, estimationConfig, timestamp);
-
-	return poses;
+	return new Promise((resolve) => {
+		model.onResults((results) => {
+			resolve(results);
+		});
+		model.send({ image: image });
+	});
 }
 
 
-function drawPose(ctx, poses, count)
+function drawPose(ctx, poses)
 {
 	const color = [
 		[ 255, 255, 255 ], // nose
@@ -78,27 +87,27 @@ function drawPose(ctx, poses, count)
 	ctx.fillRect(0, 0, w, h);
 
 	// Draw
-	poses.forEach((pose) => {
+	if (!! poses.poseLandmarks) {
+		const pose = poses.poseLandmarks;
 		for (let i = 0; i < 33; ++i) {
 			ctx.fillStyle = 'rgb(' +
 				color[i][0] + ',' +
 				color[i][1] + ',' +
 				color[i][2] + ')';
 			let r = [
-				pose.keypoints3D[i].x,
-				pose.keypoints3D[i].y,
-				pose.keypoints3D[i].z,
+				pose[i].x,
+				pose[i].y,
+				pose[i].z,
 				1.0 ];
 			mat4_mult_vec4(r, rotMat, r);
 			const x = w * 0.5 + r[0] * scale;
 			const y = h * 0.5 + r[1] * scale;
 			ctx.fillRect(x - 1, y - 1, 3, 3);
 		}
-	});
+	}
 
 	ctx.font = '10px sans-serif';
 	ctx.fillStyle = 'rgb(255,128,128)';
-	ctx.fillText('frame: ' + count.frameNum + ', persons: ' + count.personCount, 2, 12);
 }
 
 function addMouseListener(canvas)
@@ -209,11 +218,11 @@ async function main()
 	let count = 0;
 	const render = async () => {
 		const poses = await estimate(detector, video);
-		//console.log(poses);
+		console.log(poses);
 		count += 1;
 
 		const ctx = output.getContext('2d');
-		drawPose(ctx, poses, { frameNum: count, personCount: poses.length });
+		drawPose(ctx, poses, { frameNum: count });
 
 		requestAnimationFrame(render);
 	};
