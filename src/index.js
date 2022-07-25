@@ -3,6 +3,9 @@
 //import '@tensorflow/tfjs-backend-webgl';
 //import '@mediapipe/pose';
 
+const DRAW_POSE_SCALE = 256;
+const ANIMATION_FRAMERATE = 150;
+
 
 let rotMat = [
 	1.0, 0.0, 0.0, 0.0,
@@ -19,10 +22,10 @@ async function createDetector()
 		}
 	});
 	model.setOptions({
-		modelComplexity: 1,
+		modelComplexity: 0,
 		smoothLandmarks: true,
-		enableSegmentation: true,
-		smoothSegmentation: true,
+		enableSegmentation: false,
+		smoothSegmentation: false,
 		minDetectionConfidence: 0.5,
 		minTrackingConfidence: 0.5,
 	});
@@ -78,9 +81,45 @@ function drawPose(ctx, poses)
 		[ 255, 0, 0 ], // left_foot_index
 		[ 0, 0, 255 ], // right_foot_index
 	];
+    const index = {
+        nose: 0,
+        left_eye_inner: 1,
+        left_eye: 2,
+        left_eye_outer: 3,
+        right_eye_inner: 4,
+        right_eye: 5,
+        right_eye_outer: 6,
+        left_ear: 7,
+        right_ear: 8,
+        mouth_left: 9,
+        mouth_right: 10,
+        left_shoulder: 11,
+        right_shoulder: 12,
+        left_elbow: 13,
+        right_elbow: 14,
+        left_wrist: 15,
+        right_wrist: 16,
+        left_pinky: 17,
+        right_pinky: 18,
+        left_index: 19,
+        right_index: 20,
+        left_thumb: 21,
+        right_thumb: 22,
+        left_hip: 23,
+        right_hip: 24,
+        left_knee: 25,
+        right_knee: 26,
+        left_ankle: 27,
+        right_ankle: 28,
+        left_heel: 29,
+        right_heel: 30,
+        left_foot_index: 31,
+        right_foot_index: 32,
+    };
 	const w = ctx.canvas.width;
 	const h = ctx.canvas.height;
-	const scale = 180;
+	const scale = DRAW_POSE_SCALE;
+    const dotSize = 5;
 
 	// Background
 	ctx.fillStyle = 'rgb(0,0,0)';
@@ -100,10 +139,56 @@ function drawPose(ctx, poses)
 				pose[i].z,
 				1.0 ];
 			mat4_mult_vec4(r, rotMat, r);
-			const x = w * 0.5 + r[0] * scale;
-			const y = h * 0.5 + r[1] * scale;
-			ctx.fillRect(x - 1, y - 1, 3, 3);
+			const x = w * 0.34 + r[0] * scale;
+			const y = h * 0.1 + r[1] * scale;
+			ctx.fillRect(x - 0.5 * dotSize, y - 0.5 * dotSize, dotSize, dotSize);
 		}
+        // Draw bones
+        ctx.lineWidth = 4;
+        const getLinePosition = (ind) => {
+            let r = [ 0, 0, 0, 1.0 ];
+            ctx.strokeStyle = `rgba(${color[ind][0]},${color[ind][1]},${color[ind][2]},0.3)`;
+            r = [ pose[ind].x, pose[ind].y, pose[ind].z, 1.0 ];
+            mat4_mult_vec4(r, rotMat, r);
+            const x = w * 0.34 + r[0] * scale;
+            const y = h * 0.1 + r[1] * scale;
+            return { x, y };
+        };
+        let res = null;
+        // Right side
+        ctx.beginPath();
+        //// Arm
+        res = getLinePosition(index.right_shoulder);
+        ctx.moveTo(res.x, res.y);
+        res = getLinePosition(index.right_elbow);
+        ctx.lineTo(res.x, res.y);
+        res = getLinePosition(index.right_wrist);
+        ctx.lineTo(res.x, res.y);
+        //// Leg
+        res = getLinePosition(index.right_hip);
+        ctx.moveTo(res.x, res.y);
+        res = getLinePosition(index.right_knee);
+        ctx.lineTo(res.x, res.y);
+        res = getLinePosition(index.right_ankle);
+        ctx.lineTo(res.x, res.y);
+        ctx.stroke();
+        // Left side
+        ctx.beginPath();
+        //// Arm
+        res = getLinePosition(index.left_shoulder);
+        ctx.moveTo(res.x, res.y);
+        res = getLinePosition(index.left_elbow);
+        ctx.lineTo(res.x, res.y);
+        res = getLinePosition(index.left_wrist);
+        ctx.lineTo(res.x, res.y);
+        //// Leg
+        res = getLinePosition(index.left_hip);
+        ctx.moveTo(res.x, res.y);
+        res = getLinePosition(index.left_knee);
+        ctx.lineTo(res.x, res.y);
+        res = getLinePosition(index.left_ankle);
+        ctx.lineTo(res.x, res.y);
+        ctx.stroke();
 	}
 
 	ctx.font = '10px sans-serif';
@@ -224,10 +309,12 @@ async function main()
 		const ctx = output.getContext('2d');
 		drawPose(ctx, poses, { frameNum: count });
 
-		requestAnimationFrame(render);
+		setTimeout(render, ANIMATION_FRAMERATE);
+        //requestAnimationFrame(render);
 	};
 	// Start render
-	requestAnimationFrame(render);
+	//requestAnimationFrame(render);
+    render();
 }
 
 function setCanvasSizeFromCurrentStyle(canvas)
