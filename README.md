@@ -23,7 +23,9 @@ $ yarn -i
 
 ### Build
 
-Build with following command:
+This repository includes built library file `main.js` so you could start demo without building.
+
+You could build from the source with following command:
 ```
 $ npm run build
 ```
