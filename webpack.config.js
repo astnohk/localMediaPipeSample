@@ -5,7 +5,9 @@ module.exports = {
 	entry: "./src/index.js",
 	output: {
 		path: `${__dirname}/dist`,
-		filename: "main.js"
+		filename: "main.js",
+        library: "mediapipe_interface",
+        libraryTarget: "var"
 	},
 	resolve: {
 		extensions: [".js"],
