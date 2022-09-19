@@ -52,6 +52,7 @@ You could choose detector by changing `mediapipe_interface.MEDIAPIPE_MODE.holist
 * `hands`
 * `pose`
 * `holistic`
+
 See the details in official `Solutions` section.
 https://google.github.io/mediapipe/solutions/solutions.html
 
