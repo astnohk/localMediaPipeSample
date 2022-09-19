@@ -1,5 +1,5 @@
 # localMediaPipeSample
-The MediaPipe (https://google.github.io/mediapipe/) samples runs on offline local server using npm and yarn.
+The MediaPipe (https://google.github.io/mediapipe/) samples runs on offline local server using Node.js.
 
 It includes `Face Mesh`, `Hands`, `Pose` and `Holistic` samples (using holistic estimation by default).
 You could see superimposed landmarks and bones on input camera image.
@@ -52,6 +52,8 @@ You could choose detector by changing `mediapipe_interface.MEDIAPIPE_MODE.holist
 * `hands`
 * `pose`
 * `holistic`
+See the details in official `Solutions` section.
+https://google.github.io/mediapipe/solutions/solutions.html
 
 
 ## TODO
