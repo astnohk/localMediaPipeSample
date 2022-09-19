@@ -1,5 +1,5 @@
 # localMediaPipeSample
-The MediaPipe samples runs on offline local server using npm and yarn.
+The MediaPipe (https://google.github.io/mediapipe/) samples runs on offline local server using npm and yarn.
 
 It includes `Face Mesh`, `Hands`, `Pose` and `Holistic` samples (using holistic estimation by default).
 You could see superimposed landmarks and bones on input camera image.
