@@ -1,5 +1,8 @@
 # localMediaPipeSample
-The MediaPipe 3D pose estimation sample running on offline local server by using npm and yarn.
+The MediaPipe samples runs on offline local server using npm and yarn.
+
+It includes `Face Mesh`, `Hands`, `Pose` and `Holistic` samples (using holistic estimation by default).
+You could see superimposed landmarks and bones on input camera image.
 
 
 ## Get Started
@@ -36,6 +39,17 @@ Start demo with `live-server` by following command:
 $ npm start
 ```
 Your default browser will open and shows files of the project directory. You can start the demo by opening `dist/`.
+You will face invalid certificate error because the `live-server` uses locally-signed certificate.
+
+
+## Modify the demo
+
+`dist/index.html` includes flags to switch the detector.
+You could choose detector by changing `mediapipe_interface.MEDIAPIPE_MODE.holistic` as below;
+* `face_mesh`
+* `hands`
+* `pose`
+* `holistic`
 
 
 ## TODO
