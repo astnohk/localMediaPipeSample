@@ -1,31 +1,196 @@
 <!DOCTYPE HTML>
 <html>
-	<head>
+<head>
 <style type="text/css">
 body {
 	color: rgb(250,250,250);
 	background-color: rgb(5,5,5);
 }
 
-#inputVideo {
-	width: 640px;
+#output {
+	position: relative;
+	width: 600px;
+	height: 600px;
 }
 
 #outputCanvas {
-	width: 512px;
-	height: 512px;
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	width: 580px;
+	height: 580px;
+}
+
+#mainView_wrapper {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	outline-style: solid;
+	outline-width: 3px;
+	outline-color: rgb(255,255,255);
+	filter: blur(7px);
+}
+#mainView_wrapper_2nd {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	outline-style: solid;
+	outline-width: 2px;
+	outline-color: rgb(255,255,255);
+	filter: blur(3px);
+}
+#mainView_wrapper_3rd {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	outline-style: solid;
+	outline-width: 1px;
+	outline-color: rgb(255,255,255);
+	filter: blur(0.5px);
+}
+
+#inputVideo {
+	position: absolute;
+	width: 128px;
+	bottom: 0px;
 }
 </style>
-	<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
-	<script type="text/javascript" src="./main.js"></script>
-	</head>
-	<body>
-		<div>
-			<video id="inputVideo" src="" autoplay>Your browser can't show video.</video>
-			<!--<img id="inputImage" src="test.jpg" style="display: none;">-->
-		</div>
-		<div>
-			<canvas id="outputCanvas"></canvas>
-		</div>
-	</body>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js"></script>
+<script type="text/javascript" src="main.js"></script>
+<script type="text/javascript" src="matrix.js"></script>
+<script type="text/javascript" src="drawing.js"></script>
+<script>
+'use strict';
+
+////////////////////////////////////////////////////////////////
+// CONFIG
+////////////////////////////////
+const mode = MEDIAPIPE_MODE.holistic;
+const INTERVAL = 50;
+
+////////////////////////////////////////////////////////////////
+
+
+
+let rotMat = [
+	1.0, 0.0, 0.0, 0.0,
+	0.0, 1.0, 0.0, 0.0,
+	0.0, 0.0, 1.0, 0.0,
+	0.0, 0.0, 0.0, 1.0
+];
+
+
+// Entrypoint
+window.onload = main;
+
+
+function addMouseListener(canvas)
+{
+	let drad = 0.01;
+	let dshift = 0.01
+	let px = 0;
+	let py = 0;
+	let scale = 1.0;
+	let rot_x = 0;
+	let rot_y = 0;
+	let shift_x = 0;
+	let shift_y = 0;
+
+	canvas.addEventListener(
+		'mousedown',
+		(e) => {
+			px = e.clientX;
+			py = e.clientY;
+		});
+	canvas.addEventListener(
+		'mousemove',
+		(e) => {
+			if ((e.buttons & 0x01) > 0) {
+				rot_x += (e.clientY - py) * drad;
+				rot_y -= (e.clientX - px) * drad;
+			} else if ((e.buttons & 0x02) > 0) {
+				shift_x += (e.clientX - px) * dshift;
+				shift_y += (e.clientY - py) * dshift;
+			}
+			updateRotMat(scale, [ rot_x, rot_y, 0 ], [ shift_x, shift_y ]);
+			px = e.clientX;
+			py = e.clientY;
+		});
+	canvas.addEventListener(
+		'wheel',
+		(e) => {
+			scale *= e.deltaY > 0 ? 1/1.2 : 1.2;
+			updateRotMat(scale, [ rot_x, rot_y, 0 ], [ shift_x, shift_y ]);
+		});
+}
+
+function setCanvasSizeFromCurrentStyle(canvas)
+{
+	const style = canvas.getBoundingClientRect();
+	canvas.width = style.width;
+	canvas.height = style.height;
+}
+
+
+
+async function main()
+{
+	// Prompt to user to get camera as media
+    await navigator.mediaDevices.getUserMedia({ video: true });
+
+	// Get media
+	const media = await navigator.mediaDevices.getUserMedia({ video: true });
+	const video = document.getElementById('inputVideo');
+	video.srcObject = media;
+
+	// Models
+	const model = await createDetector(mode);
+    console.log(model);
+
+	// Output
+	const output = document.getElementById('outputCanvas');
+	setCanvasSizeFromCurrentStyle(output);
+	addMouseListener(output)
+
+	let count = 0;
+    const canvas_in = document.createElement('canvas');
+    const ctx_in = canvas_in.getContext('2d');
+	const render = async () => {
+        ctx_in.clearRect(0, 0, ctx_in.canvas.width, ctx_in.canvas.height);
+        ctx_in.drawImage(video, 0, 0, ctx_in.canvas.width, ctx_in.canvas.height);
+		const result = await estimate(model, canvas_in);
+		//console.log(result); // DEBUG
+		count += 1;
+
+		const ctx_out = output.getContext('2d');
+		draw(ctx_out, rotMat, result);
+
+		setTimeout(render, INTERVAL);
+	};
+	// Start render
+    render();
+}
+</script>
+</head>
+<body>
+<div id="output">
+	<div id="mainView_wrapper"></div>
+	<div id="mainView_wrapper_2nd"></div>
+	<div id="mainView_wrapper_3rd"></div>
+	<canvas id="outputCanvas"></canvas>
+</div>
+<div>
+	<video id="inputVideo" src="" autoplay style="display: none;">Your browser can't show video.</video>
+	<!--<img id="inputImage" src="test.jpg" style="display: none;">-->
+</div>
+</body>
 </html>
