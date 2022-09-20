@@ -168,7 +168,7 @@ async function main()
         ctx_in.clearRect(0, 0, ctx_in.canvas.width, ctx_in.canvas.height);
         ctx_in.drawImage(video, 0, 0, ctx_in.canvas.width, ctx_in.canvas.height);
 		const result = await estimate(model, canvas_in);
-		//console.log(result); // DEBUG
+		console.log(result); // DEBUG
 		count += 1;
 
 		const ctx_out = output.getContext('2d');
@@ -189,8 +189,7 @@ async function main()
 	<canvas id="outputCanvas"></canvas>
 </div>
 <div>
-	<video id="inputVideo" src="" autoplay style="display: none;">Your browser can't show video.</video>
-	<!--<img id="inputImage" src="test.jpg" style="display: none;">-->
+	<video id="inputVideo" src="" autoplay style="display: block;">Your browser can't show video.</video>
 </div>
 </body>
 </html>

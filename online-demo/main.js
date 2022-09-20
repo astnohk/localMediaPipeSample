@@ -115,7 +115,7 @@ async function createDetector(mode)
         detector.setOptions({
             modelComplexity: 0,
             smoothLandmarks: true,
-            enableSegmentation: false,
+            enableSegmentation: true,
             smoothSegmentation: false,
             minDetectionConfidence: 0.5,
             minTrackingConfidence: 0.5,
@@ -127,11 +127,12 @@ async function createDetector(mode)
             }
         });
         detector.setOptions({
-            modelComplexity: 1,
+            modelComplexity: 2,
+            staticImageMode: false,
             smoothLandmarks: true,
-            enableSegmentation: false,
+            refineFaceLandmarks: false,
+            enableSegmentation: true,
             smoothSegmentation: false,
-            refineLandmarks: false,
             minDetectionConfidence: 0.5,
             minTrackingConfidence: 0.5,
         });

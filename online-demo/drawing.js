@@ -1,6 +1,7 @@
 'use strict';
 
-let DRAW_INPUT_IMAGE = false;
+let DRAW_INPUT_IMAGE = true;
+let DRAW_SEGMENTATION_MASK = true;
 
 
 function draw(ctx, rotMat, result)
@@ -12,6 +13,15 @@ function draw(ctx, rotMat, result)
         ctx.drawImage(
             result.results.image,
             0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+    if (DRAW_SEGMENTATION_MASK &&
+        !! result.results.segmentationMask)
+    {
+        ctx.globalAlpha = 0.3;
+        ctx.drawImage(
+            result.results.segmentationMask,
+            0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.globalAlpha = 1.0;
     }
 
     if (result.mode === MEDIAPIPE_MODE.face_mesh) {
